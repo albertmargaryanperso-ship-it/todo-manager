@@ -23,7 +23,7 @@ export default function App() {
   const [newCount, setNewCount] = useState(0)
 
   // Load from Claude JSON on mount + manual refresh
-  const syncFromClaude = useCallback(async () => {
+  const syncFromClaude = useCallback(async (isManual = false) => {
     setSyncStatus('syncing')
     try {
       const res = await fetch(CLAUDE_JSON_URL)
@@ -43,7 +43,7 @@ export default function App() {
       }
       void before
     } catch {
-      setSyncStatus('error')
+      setSyncStatus(isManual ? 'error' : 'idle')
       setTimeout(() => setSyncStatus('idle'), 3000)
     }
   }, [todos, mergeFromClaude])
@@ -116,7 +116,7 @@ export default function App() {
 
           <div className="flex items-center gap-2">
             {/* Sync button */}
-            <button onClick={() => void syncFromClaude()} title="Sync depuis Claude (R)"
+            <button onClick={() => void syncFromClaude(true)} title="Sync depuis Claude (R)"
               className={cn('p-2 rounded-xl border transition-all', syncStatus === 'syncing' ? 'border-violet-500/50 text-violet-400 animate-spin' : 'border-zinc-800 bg-zinc-900 text-zinc-500 hover:text-zinc-300')}>
               <RefreshCw size={15} />
             </button>
